@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Callback;
+use App\Helpers\CallbackFactory;
 use Illuminate\Http\Request;
 
 class CallbacksController extends Controller
@@ -26,19 +27,9 @@ class CallbacksController extends Controller
             'message.required' => 'Введите ваше сообщение',
         ]);
 
-        $fileName = $data['phone'] . ".txt";
-        $callbackFile = fopen($fileName, "w");
-        $txt = $data['name'] . "\n";
-        fwrite($callbackFile, $txt);
-        $txt = $data['phone'] . "\n";
-        fwrite($callbackFile, $txt);
-        $txt = $data['message'] . "\n";
-        fwrite($callbackFile, $txt);
-        fclose($callbackFile);
+        $callbackFactory = new CallbackFactory();
 
-        $data['file'] = $fileName;
-
-        $callback = Callback::create($data);
+        $callback = $callbackFactory->createCallback($data);
 
         return compact('callback');
     }
