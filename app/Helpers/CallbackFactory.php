@@ -10,6 +10,28 @@ class CallbackFactory
 {
     public function createCallback($data)
     {
+        if (config('app.callback_store') == 'db') {
+            return $this->storeOnDB($data);
+        }
+
+        if (config('app.callback_store') == 'file') {
+            return $this->writeOnFile($data);
+        }
+
+        if (config('app.callback_store') == 'all') {
+            $data['file'] = $this->writeOnFile($data);
+
+            return $this->storeOnDB($data);
+        }
+    }
+
+    public function storeOnDB($data)
+    {
+        return Callback::create($data);
+    }
+
+    public function writeOnFile($data)
+    {
         $fileName = $data['phone'] . ".txt";
         $callbackFile = fopen($fileName, "w");
         $txt = $data['name'] . "\n";
@@ -20,8 +42,6 @@ class CallbackFactory
         fwrite($callbackFile, $txt);
         fclose($callbackFile);
 
-        $data['file'] = $fileName;
-
-        return Callback::create($data);
+        return $fileName;
     }
 }

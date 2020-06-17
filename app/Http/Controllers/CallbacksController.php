@@ -35,7 +35,9 @@ class CallbacksController extends Controller
     }
 
     public function delete(Callback $callback) {
-        unlink($callback->file);
+        if ($callback->file) {
+            unlink($callback->file);
+        }
         return $callback->delete();
     }
 }
